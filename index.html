@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <script type="text/javascript" src="js/Lassers.js"></script>
+    <script type="text/javascript" src="js/Particles.js"></script>
+    <script type="text/javascript" src="js/Enemies.js"></script>
+    <script type="text/javascript" src="js/Hero.js"></script>
+    <script type="text/javascript" src="js/Game.js"></script>
+</head>
+<style>
+    canvas {
+        border: 1px solid #000000;
+        margin: auto;
+    }
+</style>
+
+<body onload="init()">
+
+    <canvas id="gameArea" width="640" height="480"></canvas>
+
+    <script type="text/javascript">
+
+        function getRandomInt(max) {
+            return Math.floor(Math.random() * Math.floor(max));
+        }
+
+        class BackGround {
+            constructor(w, h) {
+                this.layers = []
+                this.layers.push(new ParticleEmitter(w, h, 1, 200))
+                this.layers.push(new ParticleEmitter(w, h, 2, 100))
+            }
+
+            draw(ctx) {
+                this.layers.forEach( (layer) => {
+                    layer.draw(ctx)
+                })
+            }
+
+            update() {
+                this.layers.forEach( (layer) => {
+                    layer.update()
+                })
+            }
+        }
+
+        let w = 640;
+        let h = 480;
+
+        var canvas = document.getElementById("gameArea");
+        var context = canvas.getContext("2d");
+
+        let game = new Game();
+        let background = new BackGround(640, 480);
+
+        function clearScreen() {
+            context.fillStyle = "black";
+            context.fillRect(0, 0, w, h);
+        }
+
+        function draw() {
+            background.draw(context);
+            game.draw(context);
+        }
+
+        function gameLoop() {
+
+            clearScreen();
+            draw();
+            update();
+            
+            window.requestAnimationFrame(gameLoop);
+        }
+
+        function update() {
+            background.update();
+            game.update();
+        }
+
+        window.onkeydown = function (event) {
+            var k = event.key;
+            if (k == 'ArrowLeft' || k == 'a' || k == 'A') {
+                game.handleKeyLeft();
+            }
+
+            if (k == 'ArrowRight' || k == 'd' || k == 'D') {
+                game.handleKeyRight();
+            }
+
+            if (k === ' ' || k === 'Spacebar') {
+                game.handleKeyFire();
+            }
+        }
+
+        function init() {
+            window.requestAnimationFrame(gameLoop);
+        }
+
+    </script>
+
+</body>
+
+</html>
