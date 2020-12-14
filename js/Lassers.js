@@ -33,6 +33,22 @@ class Lassers {
         })
     }
 
+    checkCollisions(objects) {
+        var collisions = 0
+        this.lassers.forEach((lasser) => {
+            objects.forEach((enemy) => {
+                if(lasser.x > enemy.x - 10 && 
+                   lasser.x < enemy.x + 10 && 
+                   lasser.y > enemy.y && lasser.y < enemy.y + 20) {
+    
+                    collisions += 10;
+                    enemy.reset();
+                }
+            })
+        }) 
+        return collisions;
+    }
+
     update() {
         var markForDeletion = []
         this.lassers.forEach((lasser, index) => {

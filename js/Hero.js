@@ -28,6 +28,10 @@ fire() {
     }
 }
 
+checkCollisions(enemies) {
+    return this.lassers.checkCollisions(enemies);
+}
+
 draw(ctx) {
 
     ctx.fillStyle = "red";
