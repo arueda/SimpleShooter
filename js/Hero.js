@@ -28,8 +28,21 @@ fire() {
     }
 }
 
-checkCollisions(enemies) {
+checkLasserCollisions(enemies) {
     return this.lassers.checkCollisions(enemies);
+}
+
+checkEnemyCollisions(enemies) {
+    var crash = false;
+    enemies.forEach( (enemy) => {
+        let xCollission = this.x >= enemy.x - 10 && this.x <= enemy.x + 10;
+        let yCollission = this.y >= enemy.y - 10 && this.y <= enemy.y + 10;
+        if(xCollission && yCollission) {
+            crash = true;
+        }
+    });
+
+    return crash;
 }
 
 draw(ctx) {

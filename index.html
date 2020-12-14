@@ -97,6 +97,13 @@
             if (k == "Escape") {
                 game.togglePause();
             }
+
+            console.log(k);
+
+            if (k == 'Enter') {
+                event.preventDefault();
+                game.handleReturn();
+            }
         }
 
         function init() {
