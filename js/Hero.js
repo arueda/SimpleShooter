@@ -7,6 +7,7 @@ let direction = {
 class SpaceShip {
 
 constructor(x, y) {
+    this.initialX = x;
     this.x = x;
     this.y = y;
     this.flame = 4;
@@ -32,16 +33,35 @@ checkLasserCollisions(enemies) {
     return this.lassers.checkCollisions(enemies);
 }
 
+reset() {
+    this.x = this.initialX;
+    this.movingDirection = direction.NONE;
+}
+
 checkEnemyCollisions(enemies) {
     var crash = false;
     enemies.forEach( (enemy) => {
-        let xCollission = this.x >= enemy.x - 10 && this.x <= enemy.x + 10;
-        let yCollission = this.y >= enemy.y - 10 && this.y <= enemy.y + 10;
-        if(xCollission && yCollission) {
+        let xEnemyLeft = enemy.x - 10;
+        let xEnemyRight = enemy.x + 10;
+        let yEnemyBack = enemy.y - 30;
+        // front
+        let xCollissionCenter = this.x >= xEnemyLeft && this.x <= xEnemyRight;
+        let yCollissionCenter = this.y < enemy.y && this.y > yEnemyBack;
+        // left
+        let xCollissionLeft = this.x - 10 >= xEnemyLeft && this.x -10 <= xEnemyRight;
+        let yCollissionLeft = this.y + 25 < enemy.y && this.y + 25 > yEnemyBack;
+        // right
+        let xCollissionRight = this.x + 10 >= xEnemyLeft && this.x + 10 <= xEnemyRight;
+        let yCollissionRight = this.y + 25 < enemy.y && this.y + 25 > yEnemyBack;
+
+        if((xCollissionCenter && yCollissionCenter) || 
+           (xCollissionLeft && yCollissionLeft) || 
+           (xCollissionRight && yCollissionRight)) {
+            enemy.reset();
+            this.reset();
             crash = true;
         }
     });
-
     return crash;
 }
 
@@ -67,7 +87,7 @@ draw(ctx) {
     ctx.fill();
 
     ctx.beginPath();
-    ctx.fillStyle = "blue";
+    ctx.fillStyle = "green";
     ctx.moveTo(this.x, this.y + 10);
     ctx.lineTo(this.x - 3, this.y + 20);
     ctx.lineTo(this.x + 3, this.y + 20);
@@ -79,10 +99,15 @@ draw(ctx) {
 update() {
     switch (this.movingDirection) {
         case direction.LEFT:
-            this.x -= 5;
+            if(this.x > 10) {
+                this.x -= 5;
+            }
+            
             break;
         case direction.RIGHT:
-            this.x += 5;
+            if(this.x < 630) {
+                this.x += 5;
+            }
             break;
     }
     this.flame += 1;

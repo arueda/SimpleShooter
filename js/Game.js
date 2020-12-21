@@ -7,12 +7,21 @@ let State = {
 
 class Game {
     constructor() {
+        this.init();
+    }
+
+    init() {
+        this.lives = 3;
         this.state = State.INIT;
-        this.paused = false;
-        this.gameOver = false;
         this.points = 0;
         this.spaceShip = new SpaceShip(w / 2, 400);
         this.enemyEmitter = new EnemyEmitter(510);
+    }
+
+    drawLives(ctx) {
+        ctx.fillStyle = "white"
+        ctx.font = '20px serif';
+        ctx.fillText('❤ x ' + this.lives, 20, 60);
     }
 
     drawPauseText(ctx) {
@@ -27,8 +36,14 @@ class Game {
         let text = 'GAME OVER';
         ctx.fillStyle = "white"
         ctx.font = '40px serif';
-        let textX = ctx.measureText(text).width / 2;
-        ctx.fillText(text, 320 - textX, 240);
+        var textX = ctx.measureText(text).width / 2;
+        ctx.fillText(text, 320 - textX, 120);
+
+        let textPts = 'PTS: ' + this.points;
+        ctx.fillStyle = "white"
+        ctx.font = '30px serif';
+        textX = ctx.measureText(textPts).width / 2;
+        ctx.fillText(textPts, 320 - textX, 240);
     }
 
     drawPressEnterText(ctx) {
@@ -58,11 +73,11 @@ class Game {
                 break;
 
             case State.PLAYING:
+                this.drawLives(ctx);
                 this.drawScore(ctx);
                 this.spaceShip.draw(ctx);
                 this.enemyEmitter.draw(ctx);
                 break;
-
         }
     }
 
@@ -90,7 +105,10 @@ class Game {
         this.points += this.spaceShip.checkLasserCollisions(enemies);
 
         if (this.spaceShip.checkEnemyCollisions(enemies)) {
-            this.gameOver = true;
+            this.lives = this.lives - 1;
+            if(this.lives == 0) {
+                this.state = State.GAME_OVER;
+            }
         }
     }
 
@@ -109,6 +127,8 @@ class Game {
     handleReturn() {
         if(this.state == State.INIT) {
             this.state = State.PLAYING;
+        } else if (this.state == State.GAME_OVER) {
+            this.init();
         }
     }
 

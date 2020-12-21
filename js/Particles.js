@@ -1,3 +1,5 @@
+
+
 class Particle {
     constructor(x, y, particleSize, speed) {
         this.x = x;
@@ -5,15 +7,21 @@ class Particle {
         this.particleSize = particleSize;
         this.speed = speed;
     } 
-
-    update() {
-        this.y += this.speed;
-        return this.y;
+    
+    setUpdateMethod(updateMethod) {
+        this.updateMethod = updateMethod;
     }
 
-    reset(w) {
-        this.x = getRandomInt(w);
-        this.y = 0;
+    performUpdate() {
+        this.updateMethod(this);
+    }
+
+    setResetMethod(resetMethod) {
+        this.resetMethod = resetMethod;
+    }
+
+    performReset(w, h) {
+        this.resetMethod(this, w, h);
     }
 
     draw(ctx) {
@@ -40,6 +48,18 @@ class ParticleEmitter {
         let speed = getRandomInt(3);
 
         let particle = new Particle(x,y, particleSize, speed + 1);
+
+        particle.setUpdateMethod((p) => {
+            p.y += p.speed;
+        });
+
+        particle.setResetMethod((p, h, w) => {
+            if(p.y > h) {
+                p.x = getRandomInt(w);
+                p.y = 0;
+            }
+        });
+        
         this.particles.push(particle); 
     }
 
@@ -50,11 +70,10 @@ class ParticleEmitter {
     }
 
     update() {
-        this.particles.forEach( (particle) => {
-            let updatedY = particle.update();
-            if(updatedY > this.height) {
-                particle.reset(this.width);
-            }
-        })
+        let particles = this.particles;
+        particles.forEach( (particle) => {
+            particle.performUpdate();
+            particle.performReset(this.height, this.width);
+        });
     }
 }
