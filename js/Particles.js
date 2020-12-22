@@ -1,18 +1,25 @@
 
+let COLOR = {
+    WHITE: 'white',
+    YELLOW: 'yellow',
+    RED: 'red'
+};
+
 
 class Particle {
-    constructor(x, y, particleSize, speed) {
+    constructor({x, y, particleSize, speed, color}) {
         this.x = x;
         this.y = y;
         this.particleSize = particleSize;
         this.speed = speed;
+        this.color = color;
     } 
     
     setUpdateMethod(updateMethod) {
         this.updateMethod = updateMethod;
     }
 
-    performUpdate() {
+    update() {
         this.updateMethod(this);
     }
 
@@ -20,17 +27,42 @@ class Particle {
         this.resetMethod = resetMethod;
     }
 
-    performReset(w, h) {
+    reset(w, h) {
         this.resetMethod(this, w, h);
     }
 
+    setDrawMethod(drawMethod) {
+        this.drawMethod = drawMethod;
+    }
+
     draw(ctx) {
-        ctx.fillStyle = "white";
-        ctx.fillRect(this.x, this.y, this.particleSize, this.particleSize);
+        this.drawMethod(this, ctx);
     }
 }
 
-class ParticleEmitter {
+class Star extends Particle {
+    constructor({x, y, particleSize, speed}) {
+        super({x, y, particleSize, speed, color: COLOR.WHITE});
+
+        this.setUpdateMethod((p) => {
+            p.y += p.speed;
+        });
+
+        this.setResetMethod((p, h, w) => {
+            if(p.y > h) {
+                p.x = getRandomInt(w);
+                p.y = 0;
+            }
+        });
+
+        this.setDrawMethod( (p, ctx) => {
+            ctx.fillStyle = p.color;
+            ctx.fillRect(p.x, p.y, p.particleSize, p.particleSize);
+        });
+    }
+}
+
+class StarField {
     constructor(w, h, particleSize, maxParticles) {
         this.width = w;
         this.height = h;
@@ -47,24 +79,17 @@ class ParticleEmitter {
         let y = getRandomInt(this.height);
         let speed = getRandomInt(3);
 
-        let particle = new Particle(x,y, particleSize, speed + 1);
+        let star = new Star({x: x,
+                            y: y, 
+                            particleSize: particleSize, 
+                            speed: speed+ 1});
 
-        particle.setUpdateMethod((p) => {
-            p.y += p.speed;
-        });
-
-        particle.setResetMethod((p, h, w) => {
-            if(p.y > h) {
-                p.x = getRandomInt(w);
-                p.y = 0;
-            }
-        });
-        
-        this.particles.push(particle); 
+        this.particles.push(star); 
     }
 
     draw(ctx) {
-        this.particles.forEach( (particle) => {
+        let particles = this.particles;
+        particles.forEach( (particle) => {
             particle.draw(ctx);
         })
     }
@@ -72,8 +97,8 @@ class ParticleEmitter {
     update() {
         let particles = this.particles;
         particles.forEach( (particle) => {
-            particle.performUpdate();
-            particle.performReset(this.height, this.width);
+            particle.update();
+            particle.reset(this.height, this.width);
         });
     }
 }

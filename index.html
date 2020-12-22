@@ -31,8 +31,8 @@
         class BackGround {
             constructor(w, h) {
                 this.layers = []
-                this.layers.push(new ParticleEmitter(w, h, 1, 200))
-                this.layers.push(new ParticleEmitter(w, h, 2, 100))
+                this.layers.push(new StarField(w, h, 1, 200))
+                this.layers.push(new StarField(w, h, 2, 100))
             }
 
             draw(ctx) {
