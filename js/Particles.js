@@ -1,11 +1,4 @@
 
-let COLOR = {
-    WHITE: 'white',
-    YELLOW: 'yellow',
-    RED: 'red'
-};
-
-
 class Particle {
     constructor({x, y, particleSize, speed, color}) {
         this.x = x;

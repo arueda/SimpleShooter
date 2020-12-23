@@ -11,11 +11,13 @@ class Game {
     }
 
     init() {
+        this.multiplier = 10;
         this.lives = 3;
         this.state = State.INIT;
         this.points = 0;
         this.spaceShip = new SpaceShip(w / 2, 400);
         this.enemyEmitter = new EnemyEmitter(510);
+        this.explosionsInTheSky = new Explosions();
     }
 
     drawLives(ctx) {
@@ -77,6 +79,7 @@ class Game {
                 this.drawScore(ctx);
                 this.spaceShip.draw(ctx);
                 this.enemyEmitter.draw(ctx);
+                this.explosionsInTheSky.draw(ctx);
                 break;
         }
     }
@@ -94,7 +97,8 @@ class Game {
             case State.PLAYING:
                 this.spaceShip.update();
                 this.enemyEmitter.update();
-                this.checkCollisions()
+                this.checkCollisions();
+                this.explosionsInTheSky.update();
                 break;
 
         }
@@ -102,9 +106,15 @@ class Game {
 
     checkCollisions() {
         let enemies = this.enemyEmitter.enemies;
-        this.points += this.spaceShip.checkLasserCollisions(enemies);
+        let hits = this.spaceShip.checkLasserCollisions(enemies, (x, y) => {
+            this.explosionsInTheSky.append({x: x, y: y, color: COLOR.RED});
+        });
 
-        if (this.spaceShip.checkEnemyCollisions(enemies)) {
+        this.points += (hits * this.multiplier);
+
+        if (this.spaceShip.checkEnemyCollisions(enemies, (x, y) => {
+            this.explosionsInTheSky.append({x: x, y: y, color: COLOR.GREEN});
+        })) {
             this.lives = this.lives - 1;
             if(this.lives == 0) {
                 this.state = State.GAME_OVER;

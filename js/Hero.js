@@ -29,8 +29,8 @@ fire() {
     }
 }
 
-checkLasserCollisions(enemies) {
-    return this.lassers.checkCollisions(enemies);
+checkLasserCollisions(enemies, onCollision) {
+    return this.lassers.checkCollisions(enemies, onCollision);
 }
 
 reset() {
@@ -38,7 +38,7 @@ reset() {
     this.movingDirection = direction.NONE;
 }
 
-checkEnemyCollisions(enemies) {
+checkEnemyCollisions(enemies, onCollision) {
     var crash = false;
     enemies.forEach( (enemy) => {
         let xEnemyLeft = enemy.x - 10;
@@ -57,6 +57,7 @@ checkEnemyCollisions(enemies) {
         if((xCollissionCenter && yCollissionCenter) || 
            (xCollissionLeft && yCollissionLeft) || 
            (xCollissionRight && yCollissionRight)) {
+            onCollision(this.x, this.y);
             enemy.reset();
             this.reset();
             crash = true;
@@ -67,7 +68,7 @@ checkEnemyCollisions(enemies) {
 
 draw(ctx) {
 
-    ctx.fillStyle = "red";
+    ctx.fillStyle = COLOR.RED;
     ctx.beginPath();
     ctx.arc(this.x, this.y + 25, this.flame, 0, 2 * Math.PI);
     ctx.fill();
@@ -87,7 +88,7 @@ draw(ctx) {
     ctx.fill();
 
     ctx.beginPath();
-    ctx.fillStyle = "green";
+    ctx.fillStyle = COLOR.GREEN;
     ctx.moveTo(this.x, this.y + 10);
     ctx.lineTo(this.x - 3, this.y + 20);
     ctx.lineTo(this.x + 3, this.y + 20);

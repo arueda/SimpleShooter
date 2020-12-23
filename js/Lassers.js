@@ -33,7 +33,7 @@ class Lassers {
         })
     }
 
-    checkCollisions(objects) {
+    checkCollisions(objects, onCollision) {
         var collisions = 0
         this.lassers.forEach((lasser) => {
             objects.forEach((enemy) => {
@@ -41,7 +41,8 @@ class Lassers {
                    lasser.x < enemy.x + 10 && 
                    lasser.y > enemy.y && lasser.y < enemy.y + 20) {
     
-                    collisions += 10;
+                    collisions += 1;
+                    onCollision(enemy.x, enemy.y);
                     enemy.reset();
                 }
             })
